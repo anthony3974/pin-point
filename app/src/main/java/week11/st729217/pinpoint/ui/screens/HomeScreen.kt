@@ -7,11 +7,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun HomeScreen(onOpenProfile: () -> Unit) {
+fun HomeScreen(
+    onOpenProfile: () -> Unit
+) {
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        Text("Home (Map placeholder)", style = MaterialTheme.typography.headlineSmall)
-        Spacer(modifier = Modifier.height(12.dp))
-        Text("Add map integration (Google Maps) here.")
+        Text("Home", style = MaterialTheme.typography.headlineSmall)
         Spacer(modifier = Modifier.height(24.dp))
         Button(onClick = onOpenProfile) {
             Text("Open Profile")
