@@ -1,20 +1,32 @@
 package week11.st729217.pinpoint.ui.screens
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.*
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.FloatingActionButton
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import week11.st729217.pinpoint.FavoritesViewModel
 
 @Composable
 fun HomeScreen(
     onOpenProfile: () -> Unit
 ) {
-    Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        Text("Home", style = MaterialTheme.typography.headlineSmall)
-        Spacer(modifier = Modifier.height(24.dp))
-        Button(onClick = onOpenProfile) {
-            Text("Open Profile")
+    Scaffold(
+        floatingActionButton = {
+            FloatingActionButton(onClick = onOpenProfile) {
+                Icon(Icons.Default.Person, contentDescription = "Profile")
+            }
+        }
+    ) { paddingValues ->
+        Box(modifier = Modifier.padding(paddingValues).fillMaxSize()) {
+            val favoritesViewModel: FavoritesViewModel = viewModel()
+            LocationScreen(favoritesViewModel = favoritesViewModel)
         }
     }
 }
