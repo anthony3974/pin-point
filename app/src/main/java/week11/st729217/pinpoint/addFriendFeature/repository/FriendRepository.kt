@@ -1,0 +1,115 @@
+package week11.st729217.pinpoint.addFriendFeature.repository
+
+
+import com.google.firebase.Timestamp
+import com.google.firebase.firestore.FirebaseFirestore
+import kotlinx.coroutines.channels.awaitClose
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.tasks.await
+import week11.st729217.pinpoint.addFriendFeature.model.Friend
+import week11.st729217.pinpoint.addFriendFeature.model.FriendStatus
+
+class FriendRepository(
+    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
+) {
+
+    // Logic: Find user by email -> Send Request (Batch Write)
+    suspend fun sendFriendRequest(
+        myUid: String,
+        myName: String,
+        myEmail: String,
+        friendEmail: String
+    ): Result<Unit> {
+        return try {
+            // 1. Search for the friend by email
+            val querySnapshot = firestore.collection("users")
+                .whereEqualTo("email", friendEmail)
+                .get()
+                .await()
+
+            //returning if no user found.
+            if (querySnapshot.isEmpty) {
+                return Result.failure(Exception("User with this email not found."))
+            }
+
+            // Get the friend's details
+            val friendDoc = querySnapshot.documents.first()
+            val friendUid = friendDoc.id
+            val friendName = friendDoc.getString("name") ?: "noName"
+
+            // Validation: Don't let users add themselves
+            if (friendUid == myUid) {
+                return Result.failure(Exception("You cannot add yourself as a friend."))
+            }
+
+            // 2. Prepare the Batch Write (Updates both users at once)
+            val batch = firestore.batch()
+
+            //Their Profile in My Friend List
+            // Reference A: My 'friends' list (I sent it)
+            val myFriendRef = firestore.collection("users").document(myUid)
+                .collection("friends").document(friendUid)
+
+            val myFriendData = Friend(
+                uid = friendUid,
+                name = friendName,
+                email = friendEmail,
+                status = FriendStatus.SENT.name,
+                timestamp = Timestamp.now()
+            )
+
+
+            //My Profile in their Friend List
+            // Reference B: Their 'friends' list (They receive it)
+            val theirFriendRef = firestore.collection("users").document(friendUid)
+                .collection("friends").document(myUid)
+
+            val theirFriendData = Friend(
+                uid = myUid,
+                name = myName, // Store my name so they know who sent it
+                email = myEmail, // Optional
+                status = FriendStatus.PENDING.name,
+                timestamp = Timestamp.now()
+            )
+
+            // Queue the operations
+            batch.set(myFriendRef, myFriendData)
+            batch.set(theirFriendRef, theirFriendData)
+
+            // Commit the batch
+            batch.commit().await()
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+
+    // Listen for real-time updates of pending requests
+    fun getPendingRequests(myUid: String): Flow<List<Friend>> = callbackFlow {
+        val collectionRef = firestore.collection("users").document(myUid)
+            .collection("friends")
+            .whereEqualTo("status", FriendStatus.PENDING.name)
+
+        // This listener fires every time the data changes in Firestore
+        val listenerRegistration = collectionRef.addSnapshotListener { snapshot, error ->
+            if (error != null) {
+                close(error) // Close the stream if there's an error
+                return@addSnapshotListener
+            }
+
+            if (snapshot != null) {
+                // Convert the documents into a List of Friend objects
+                val requests = snapshot.toObjects(Friend::class.java)
+                trySend(requests) // Send the new list down the pipe
+            }
+        }
+
+        // When the ViewModel stops listening (screen closed), remove the Firestore listener
+        awaitClose { listenerRegistration.remove() }
+    }
+
+
+}//end of the Class

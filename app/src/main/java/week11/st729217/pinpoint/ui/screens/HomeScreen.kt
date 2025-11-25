@@ -7,7 +7,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun HomeScreen(onOpenProfile: () -> Unit) {
+fun HomeScreen(onOpenProfile: () -> Unit , onAddFriend: () -> Unit) {
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
         Text("Home (Map placeholder)", style = MaterialTheme.typography.headlineSmall)
         Spacer(modifier = Modifier.height(12.dp))
@@ -16,5 +16,9 @@ fun HomeScreen(onOpenProfile: () -> Unit) {
         Button(onClick = onOpenProfile) {
             Text("Open Profile")
         }
+        Button(onClick = onAddFriend) {
+            Text("Add Friend")
+        }
+
     }
 }

@@ -1,13 +1,12 @@
 package week11.st729217.pinpoint.ui.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
-import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
+import week11.st729217.pinpoint.addFriendFeature.screen.AddFriendScreen
 import week11.st729217.pinpoint.ui.screens.LoginScreen
 import week11.st729217.pinpoint.ui.screens.RegisterScreen
 import week11.st729217.pinpoint.ui.screens.HomeScreen
@@ -19,6 +18,8 @@ sealed class Route(val route: String) {
     object Register: Route("register")
     object Home: Route("home")
     object Profile: Route("profile")
+
+    object AddFriend: Route("addFriend")
 }
 
 @Composable
@@ -51,7 +52,8 @@ fun AppNavHost(modifier: Modifier = Modifier) {
 
         composable(Route.Home.route) {
             HomeScreen(
-                onOpenProfile = { navController.navigate(Route.Profile.route) }
+                onOpenProfile = { navController.navigate(Route.Profile.route) },
+                onAddFriend = { navController.navigate(Route.AddFriend.route) }
             )
         }
 
@@ -65,6 +67,11 @@ fun AppNavHost(modifier: Modifier = Modifier) {
                 },
                 onBack = { navController.popBackStack() }
             )
+
+        }
+
+        composable(Route.AddFriend.route) {
+            AddFriendScreen()
         }
     }
 }
