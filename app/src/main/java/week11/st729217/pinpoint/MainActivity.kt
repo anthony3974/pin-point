@@ -3,6 +3,7 @@ package week11.st729217.pinpoint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
@@ -42,6 +43,8 @@ val items = listOf(
 )
 
 class MainActivity : ComponentActivity() {
+    private val favoritesViewModel by viewModels<FavoritesViewModel>()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
@@ -83,14 +86,12 @@ class MainActivity : ComponentActivity() {
                         modifier = Modifier.padding(innerPadding)
                     ) {
                         composable(AppDestinations.LOCATION_ROUTE) {
-                            LocationScreen()
-                        } // <-- Add closing brace here
-
+                            LocationScreen(favoritesViewModel = favoritesViewModel)
+                        }
                         composable(AppDestinations.FAVORITES_ROUTE) {
-                            FavoritesPage()
-                        } // <-- Add closing brace here
+                            FavoritesPage(favoritesViewModel = favoritesViewModel)
+                        }
                     }
-
                 }
             }
         }
