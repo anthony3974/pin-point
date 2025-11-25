@@ -8,14 +8,12 @@ import java.util.UUID
 class FavoritesViewModel : ViewModel() {
     val favoriteLocations = mutableStateListOf<FavoriteLocation>()
 
-    init {
-        favoriteLocations.addAll(
-            listOf(
-                FavoriteLocation(name = "Eiffel Tower", location = LatLng(48.8584, 2.2945)),
-                FavoriteLocation(name = "Colosseum", location = LatLng(41.8902, 12.4922)),
-                FavoriteLocation(name = "Sydney Opera House", location = LatLng(-33.8568, 151.2153))
-            )
+    fun addFavorite(latLng: LatLng) {
+        val newFavorite = FavoriteLocation(
+            name = "New Location", // Give it a default name
+            location = latLng
         )
+        favoriteLocations.add(newFavorite)
     }
 
     fun updateName(id: UUID, newName: String) {

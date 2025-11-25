@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.Priority
 import com.google.android.gms.maps.model.CameraPosition
@@ -38,7 +39,7 @@ private val locationPermissions = arrayOf(
 )
 
 @Composable
-fun LocationScreen(modifier: Modifier = Modifier) {
+fun LocationScreen(modifier: Modifier = Modifier, favoritesViewModel: FavoritesViewModel = viewModel()) {
     val context = LocalContext.current
     val fusedLocationClient = remember {
         LocationServices.getFusedLocationProviderClient(context)
@@ -60,7 +61,7 @@ fun LocationScreen(modifier: Modifier = Modifier) {
         position = CameraPosition.fromLatLngZoom(LatLng(0.0, 0.0), 10f)
     }
 
-    val tappedLocations = remember { mutableStateOf<List<LatLng>>(listOf()) }
+    val favoriteLocations = favoritesViewModel.favoriteLocations
 
     fun getCurrentLocation(onLocation: (Location?) -> Unit) {
         if (areLocationPermissionsGranted(context)) {
@@ -88,8 +89,7 @@ fun LocationScreen(modifier: Modifier = Modifier) {
                 modifier = Modifier.fillMaxSize(),
                 cameraPositionState = cameraPositionState,
                 onMapClick = { latLng ->
-                    // Add the new tapped location to the list
-                    tappedLocations.value = tappedLocations.value + latLng
+                    favoritesViewModel.addFavorite(latLng)
                 }
             ) {
                 currentLocation?.let {
@@ -99,11 +99,11 @@ fun LocationScreen(modifier: Modifier = Modifier) {
                         snippet = "You are here"
                     )
                 }
-                tappedLocations.value.forEach { latLng ->
+                favoriteLocations.forEach { favorite ->
                     Marker(
-                        state = MarkerState(position = latLng),
-                        title = "Tapped Location",
-                        snippet = "Lat: ${latLng.latitude}, Lng: ${latLng.longitude}"
+                        state = MarkerState(position = favorite.location),
+                        title = favorite.name,
+                        snippet = "Lat: ${favorite.location.latitude}, Lng: ${favorite.location.longitude}"
                     )
                 }
             }
