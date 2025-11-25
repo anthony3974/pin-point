@@ -6,10 +6,11 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
-import week11.st729217.pinpoint.ui.screens.LoginScreen
-import week11.st729217.pinpoint.ui.screens.RegisterScreen
+import week11.st729217.pinpoint.FavoritesViewModel
 import week11.st729217.pinpoint.ui.screens.HomeScreen
+import week11.st729217.pinpoint.ui.screens.LoginScreen
 import week11.st729217.pinpoint.ui.screens.ProfileScreen
+import week11.st729217.pinpoint.ui.screens.RegisterScreen
 
 sealed class Route(val route: String) {
     object Splash: Route("splash")
@@ -20,7 +21,10 @@ sealed class Route(val route: String) {
 }
 
 @Composable
-fun AppNavHost(modifier: Modifier = Modifier) {
+fun AppNavHost(
+    modifier: Modifier = Modifier,
+    favoritesViewModel: FavoritesViewModel
+) {
     val navController = rememberNavController()
     val auth = FirebaseAuth.getInstance()
 
@@ -49,7 +53,8 @@ fun AppNavHost(modifier: Modifier = Modifier) {
 
         composable(Route.Home.route) {
             HomeScreen(
-                onOpenProfile = { navController.navigate(Route.Profile.route) }
+                onOpenProfile = { navController.navigate(Route.Profile.route) },
+                favoritesViewModel = favoritesViewModel
             )
         }
 
