@@ -1,6 +1,5 @@
 package week11.st729217.pinpoint.addFriendFeature.viewmodel
 
-
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -11,12 +10,11 @@ import com.google.firebase.auth.FirebaseAuth
 import week11.st729217.pinpoint.addFriendFeature.model.Friend
 import week11.st729217.pinpoint.addFriendFeature.repository.FriendRepository
 
-// Simple state to track what's happening on the screen
 data class FriendUiState(
     val isLoading: Boolean = false,
     val successMessage: String? = null,
     val errorMessage: String? = null,
-    val pendingRequests: List<Friend> = emptyList() // <--- NEW FIELD
+    val pendingRequests: List<Friend> = emptyList()
 )
 
 class FriendViewModel(
@@ -28,39 +26,51 @@ class FriendViewModel(
 
     private val auth = FirebaseAuth.getInstance()
 
+    // It is good practice to uncomment this so data loads immediately when the screen opens
+    init {
+        loadPendingRequests()
+    }
+
+    //sending friend request to the registered user by just using their email
     fun addFriend(targetEmail: String) {
-        // 1. Basic Input Validation
         if (targetEmail.isBlank()) {
-            _uiState.value = FriendUiState(errorMessage = "Please enter an email address.")
+            // FIX: Use copy to keep the pending list visible while showing error
+            _uiState.value = _uiState.value.copy(errorMessage = "Please enter an email address.")
             return
         }
 
-        // 2. Get Current User Info
         val currentUser = auth.currentUser
         val myUid = currentUser?.uid
         val myName = currentUser?.displayName ?: "Unknown"
         val myEmail = currentUser?.email ?: ""
 
         if (myUid == null) {
-            _uiState.value = FriendUiState(errorMessage = "You are not logged in.")
+            _uiState.value = _uiState.value.copy(errorMessage = "You are not logged in.")
             return
         }
 
-        // 3. Trigger the Repository logic
         viewModelScope.launch {
-            _uiState.value = FriendUiState(isLoading = true) // Show loading spinner
+            // Use copy so the list doesn't disappear while loading
+            _uiState.value = _uiState.value.copy(isLoading = true)
 
             val result = repository.sendFriendRequest(myUid, myName, myEmail, targetEmail)
 
             if (result.isSuccess) {
-                _uiState.value = FriendUiState(successMessage = "Friend request sent to $targetEmail!")
+                //  Use copy
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    successMessage = "Friend request sent to $targetEmail!"
+                )
             } else {
-                _uiState.value = FriendUiState(errorMessage = result.exceptionOrNull()?.message ?: "Unknown error")
+                //  Use copy
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    errorMessage = result.exceptionOrNull()?.message ?: "Unknown error"
+                )
             }
         }
     }
 
-    // 2. Add a function to start listening
     fun loadPendingRequests() {
         val currentUser = auth.currentUser
         val myUid = currentUser?.uid ?: return
@@ -68,21 +78,18 @@ class FriendViewModel(
         viewModelScope.launch {
             repository.getPendingRequests(myUid)
                 .collect { requests ->
-                    // Whenever database changes, update the UI state
                     _uiState.value = _uiState.value.copy(pendingRequests = requests)
                 }
         }
     }
 
-    // Call this when the ViewModel starts (init block)
-//    init {
-//        loadPendingRequests()
-//    }
-
     // Helper to reset state after showing a Toast/Snackbar
     fun clearState() {
-        _uiState.value = FriendUiState()
+        // Only reset the messages, DO NOT reset the list
+        _uiState.value = _uiState.value.copy(
+            successMessage = null,
+            errorMessage = null,
+            isLoading = false
+        )
     }
-
-
 }

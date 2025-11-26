@@ -12,6 +12,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import week11.st729217.pinpoint.addFriendFeature.viewmodel.FriendViewModel
 
+
+//just using viewmodel addFriend Method here.
+
 @Composable
 fun AddFriendScreen(
     // We inject the ViewModel here (defaulting to a new instance)
