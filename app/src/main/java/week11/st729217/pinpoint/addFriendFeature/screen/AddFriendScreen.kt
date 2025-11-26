@@ -83,5 +83,13 @@ fun AddFriendScreen(
                 Text("Send Friend Request")
             }
         }
+
+        Spacer(modifier = Modifier.height(16.dp))
+        Divider() // Optional: Adds a line between the sections
+        Spacer(modifier = Modifier.height(16.dp))
+
+        PendingRequestsScreen();
+
+
     }
 }

@@ -112,4 +112,31 @@ class FriendRepository(
     }
 
 
+    // Accept a friend request
+    suspend fun acceptFriendRequest(myUid: String, friendUid: String): Result<Unit> {
+        return try {
+            val batch = firestore.batch()
+
+            // Update MY document (status: pending -> accepted)
+            val myFriendRef = firestore.collection("users").document(myUid)
+                .collection("friends").document(friendUid)
+
+            batch.update(myFriendRef, "status", FriendStatus.ACCEPTED.name)
+
+            // Update THEIR document (status: sent -> accepted)
+            val theirFriendRef = firestore.collection("users").document(friendUid)
+                .collection("friends").document(myUid)
+
+            batch.update(theirFriendRef, "status", FriendStatus.ACCEPTED.name)
+
+            // Commit both changes at once
+            batch.commit().await()
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+
 }//end of the Class

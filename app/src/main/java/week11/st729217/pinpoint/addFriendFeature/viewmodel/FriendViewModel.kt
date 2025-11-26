@@ -83,6 +83,32 @@ class FriendViewModel(
         }
     }
 
+    // In FriendViewModel.kt
+
+    fun acceptRequest(friendUid: String) {
+        val currentUser = auth.currentUser
+        val myUid = currentUser?.uid ?: return
+
+        viewModelScope.launch {
+            // Show loading...
+            _uiState.value = _uiState.value.copy(isLoading = true)
+
+            val result = repository.acceptFriendRequest(myUid, friendUid)
+
+            if (result.isSuccess) {
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    successMessage = "Friend request accepted!"
+                )
+            } else {
+                _uiState.value = _uiState.value.copy(
+                    isLoading = false,
+                    errorMessage = result.exceptionOrNull()?.message ?: "Failed to accept request"
+                )
+            }
+        }
+    }
+
     // Helper to reset state after showing a Toast/Snackbar
     fun clearState() {
         // Only reset the messages, DO NOT reset the list
