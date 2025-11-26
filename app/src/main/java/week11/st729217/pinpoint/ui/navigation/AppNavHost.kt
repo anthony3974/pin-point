@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
 import week11.st729217.pinpoint.addFriendFeature.screen.AddFriendScreen
+import week11.st729217.pinpoint.nazMapfeature.screen.MapScreen
 import week11.st729217.pinpoint.ui.screens.LoginScreen
 import week11.st729217.pinpoint.ui.screens.RegisterScreen
 import week11.st729217.pinpoint.ui.screens.HomeScreen
@@ -20,6 +21,7 @@ sealed class Route(val route: String) {
     object Profile: Route("profile")
 
     object AddFriend: Route("addFriend")
+    object Map: Route("map")
 }
 
 @Composable
@@ -53,7 +55,8 @@ fun AppNavHost(modifier: Modifier = Modifier) {
         composable(Route.Home.route) {
             HomeScreen(
                 onOpenProfile = { navController.navigate(Route.Profile.route) },
-                onAddFriend = { navController.navigate(Route.AddFriend.route) }
+                onAddFriend = { navController.navigate(Route.AddFriend.route) },
+                        onMap = { navController.navigate(Route.Map.route) }
             )
         }
 
@@ -72,6 +75,9 @@ fun AppNavHost(modifier: Modifier = Modifier) {
 
         composable(Route.AddFriend.route) {
             AddFriendScreen()
+        }
+        composable(Route.Map.route) {
+            MapScreen()
         }
     }
 }

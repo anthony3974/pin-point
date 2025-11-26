@@ -3,6 +3,9 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("com.google.gms.google-services")
+
+    // Add this line:
+    id("com.google.android.libraries.mapsplatform.secrets-gradle-plugin")
 }
 
 android {
@@ -63,4 +66,16 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
+
+    
+    // Google Maps for Compose
+    implementation("com.google.maps.android:maps-compose:4.3.0")
+
+    // Google Play Services Location (to get user location)
+    implementation("com.google.android.gms:play-services-location:21.0.1")
+
+    //mqtt broker
+    implementation("org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5")
+    implementation("androidx.localbroadcastmanager:localbroadcastmanager:1.1.0")
+
 }
