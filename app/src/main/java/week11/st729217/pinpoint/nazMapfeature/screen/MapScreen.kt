@@ -33,6 +33,8 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.MapUiSettings
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import week11.st729217.pinpoint.nazMapfeature.mapViewModel.MapViewModel
 
@@ -88,15 +90,22 @@ fun MapScreen(
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
             cameraPositionState = cameraPositionState,
-            properties = MapProperties(
-                // This shows the Blue Dot (if permission is granted)
-                isMyLocationEnabled = hasLocationPermission
-            ),
-            uiSettings = MapUiSettings(
-                // This enables the "Target" button to center on yourself
-                myLocationButtonEnabled = true
-            )
-        )
+            properties = MapProperties(isMyLocationEnabled = hasLocationPermission),
+            uiSettings = MapUiSettings(myLocationButtonEnabled = true)
+        ) {
+            // DRAW MARKERS FOR FRIENDS
+            uiState.friendLocations.forEach { (uid, latLng) ->
+                Marker(
+                    state = MarkerState(position = latLng),
+                    title = "Friend", // You can lookup name if you want
+                    snippet = "Live",
+                    // Optional: Change color to Azure so it looks different from standard red pins
+                    icon = com.google.android.gms.maps.model.BitmapDescriptorFactory.defaultMarker(
+                        com.google.android.gms.maps.model.BitmapDescriptorFactory.HUE_AZURE
+                    )
+                )
+            }
+        }
 
         // 2. The Toggle Overlay (Top Center)
         Card(

@@ -138,5 +138,26 @@ class FriendRepository(
         }
     }
 
+    // Listen for real-time updates of ACCEPTED friends
+    fun getAcceptedFriends(myUid: String): Flow<List<Friend>> = callbackFlow {
+        val collectionRef = firestore.collection("users").document(myUid)
+            .collection("friends")
+            .whereEqualTo("status", FriendStatus.ACCEPTED.name) // <--- The specific filter
+
+        val listenerRegistration = collectionRef.addSnapshotListener { snapshot, error ->
+            if (error != null) {
+                close(error)
+                return@addSnapshotListener
+            }
+
+            if (snapshot != null) {
+                val friends = snapshot.toObjects(Friend::class.java)
+                trySend(friends)
+            }
+        }
+
+        awaitClose { listenerRegistration.remove() }
+    }
+
 
 }//end of the Class
