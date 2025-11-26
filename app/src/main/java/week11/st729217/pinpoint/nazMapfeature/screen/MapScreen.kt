@@ -6,18 +6,43 @@ import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.runtime.*
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Switch
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
-import com.google.maps.android.compose.*
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.MapUiSettings
+import com.google.maps.android.compose.rememberCameraPositionState
+import week11.st729217.pinpoint.nazMapfeature.mapViewModel.MapViewModel
 
 @Composable
-fun MapScreen() {
+fun MapScreen(
+    viewModel: MapViewModel = viewModel()
+) {
     val context = LocalContext.current
+
+    val uiState by viewModel.uiState.collectAsState()
 
     // 1. Setup the initial camera position (Example: Toronto)
     // The map needs a starting point before it finds your GPS.
@@ -46,6 +71,8 @@ fun MapScreen() {
 
     // 4. Trigger the permission request when screen starts
     LaunchedEffect(Unit) {
+        viewModel.initializeLocationClient(context)
+
         if (!hasLocationPermission) {
             permissionLauncher.launch(
                 arrayOf(
@@ -70,5 +97,37 @@ fun MapScreen() {
                 myLocationButtonEnabled = true
             )
         )
+
+        // 2. The Toggle Overlay (Top Center)
+        Card(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = 48.dp, start = 16.dp, end = 16.dp), // Padding for status bar
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            elevation = CardDefaults.cardElevation(6.dp)
+        ) {
+            Row(
+                modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(modifier = Modifier.padding(end = 12.dp)) {
+                    Text(
+                        text = if (uiState.isSharing) "You are LIVE" else "You are hidden",
+                        style = MaterialTheme.typography.titleMedium,
+                        color = if (uiState.isSharing) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                    )
+                    Text(
+                        text = uiState.locationLog,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.outline
+                    )
+                }
+
+                Switch(
+                    checked = uiState.isSharing,
+                    onCheckedChange = { viewModel.toggleLocationSharing(it) }
+                )
+            }
+        }
     }
 }
