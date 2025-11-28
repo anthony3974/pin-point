@@ -1,9 +1,10 @@
-package week11.st729217.pinpoint
+package week11.st729217.pinpoint.favorites.viewmodel
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.ViewModel
 import com.google.android.gms.maps.model.LatLng
 import java.util.UUID
+import week11.st729217.pinpoint.favorites.data.FavoriteLocation
 
 class FavoritesViewModel : ViewModel() {
     val favoriteLocations = mutableStateListOf<FavoriteLocation>()

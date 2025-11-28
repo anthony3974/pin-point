@@ -1,4 +1,4 @@
-package week11.st729217.pinpoint.ui.navigation
+package week11.st729217.pinpoint.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -6,14 +6,13 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
+import week11.st729217.pinpoint.auth.ui.LoginScreen
+import week11.st729217.pinpoint.auth.ui.RegisterScreen
 import week11.st729217.pinpoint.favorites.viewmodel.FavoritesViewModel
-import week11.st729217.pinpoint.ui.screens.HomeScreen
-import week11.st729217.pinpoint.ui.screens.LoginScreen
-import week11.st729217.pinpoint.ui.screens.ProfileScreen
-import week11.st729217.pinpoint.ui.screens.RegisterScreen
+import week11.st729217.pinpoint.home.ui.HomeScreen
+import week11.st729217.pinpoint.profile.ui.ProfileScreen
 
 sealed class Route(val route: String) {
-    object Splash: Route("splash")
     object Login: Route("login")
     object Register: Route("register")
     object Home: Route("home")

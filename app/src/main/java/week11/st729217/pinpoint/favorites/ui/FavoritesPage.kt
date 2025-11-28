@@ -1,4 +1,4 @@
-package week11.st729217.pinpoint
+package week11.st729217.pinpoint.favorites.ui
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -9,17 +9,15 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
-import java.util.UUID
+import week11.st729217.pinpoint.favorites.data.FavoriteLocation
+import week11.st729217.pinpoint.favorites.viewmodel.FavoritesViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FavoritesPage(
     modifier: Modifier = Modifier,
-    favoritesViewModel: FavoritesViewModel = viewModel()
+    favoritesViewModel: FavoritesViewModel
 ) {
     val favoriteLocations = favoritesViewModel.favoriteLocations
 
@@ -104,7 +102,6 @@ fun FavoriteListItem(
                         favorite.location.longitude
                     ),
                     style = MaterialTheme.typography.bodySmall,
-                    fontSize = 12.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
