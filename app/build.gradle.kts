@@ -44,11 +44,13 @@ android {
 }
 
 dependencies {
-    implementation("androidx.navigation:navigation-compose:2.8.8")
+    // Firebase - BOM manages the versions
     implementation(platform("com.google.firebase:firebase-bom:34.6.0"))
     implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-firestore")
     implementation("com.google.firebase:firebase-analytics")
+
+    // Other dependencies from libs catalog
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)

@@ -6,17 +6,9 @@ import android.content.pm.PackageManager
 import android.location.Location
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Button
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.foundation.layout.*
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -61,6 +53,8 @@ fun LocationScreen(modifier: Modifier = Modifier, favoritesViewModel: FavoritesV
         position = CameraPosition.fromLatLngZoom(LatLng(0.0, 0.0), 10f)
     }
 
+    var showAddFavoriteDialog by remember { mutableStateOf<LatLng?>(null) }
+
     val favoriteLocations = favoritesViewModel.favoriteLocations
 
     fun getCurrentLocation(onLocation: (Location?) -> Unit) {
@@ -83,13 +77,24 @@ fun LocationScreen(modifier: Modifier = Modifier, favoritesViewModel: FavoritesV
         }
     }
 
+    showAddFavoriteDialog?.let { latLng ->
+        AddFavoriteDialog(
+            latLng = latLng,
+            onDismiss = { showAddFavoriteDialog = null },
+            onConfirm = { name ->
+                favoritesViewModel.addFavorite(latLng, name)
+                showAddFavoriteDialog = null
+            }
+        )
+    }
+
     Box(modifier = modifier.fillMaxSize()) {
         if (hasLocationPermission) {
             GoogleMap(
                 modifier = Modifier.fillMaxSize(),
                 cameraPositionState = cameraPositionState,
                 onMapClick = { latLng ->
-                    favoritesViewModel.addFavorite(latLng)
+                    showAddFavoriteDialog = latLng
                 }
             ) {
                 currentLocation?.let {
@@ -131,6 +136,53 @@ fun LocationScreen(modifier: Modifier = Modifier, favoritesViewModel: FavoritesV
             }
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun AddFavoriteDialog(
+    latLng: LatLng,
+    onDismiss: () -> Unit,
+    onConfirm: (String) -> Unit
+) {
+    var name by remember { mutableStateOf("New Favorite") }
+
+    AlertDialog(
+        onDismissRequest = onDismiss,
+        title = { Text("Add Favorite") },
+        text = {
+            Column {
+                Text("Enter a name for this location:")
+                Spacer(modifier = Modifier.height(8.dp))
+                OutlinedTextField(
+                    value = name,
+                    onValueChange = { name = it },
+                    label = { Text("Name") }
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = "Lat: %.4f, Lng: %.4f".format(latLng.latitude, latLng.longitude),
+                    style = MaterialTheme.typography.bodySmall
+                )
+            }
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    if (name.isNotBlank()) {
+                        onConfirm(name)
+                    }
+                }
+            ) {
+                Text("Confirm")
+            }
+        },
+        dismissButton = {
+            Button(onClick = onDismiss) {
+                Text("Cancel")
+            }
+        }
+    )
 }
 
 private fun areLocationPermissionsGranted(context: Context): Boolean = locationPermissions.all {

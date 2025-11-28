@@ -1,4 +1,4 @@
-package week11.st729217.pinpoint.ui.theme
+package week11.st729217.pinpoint.theme
 
 import android.app.Activity
 import android.os.Build
@@ -30,6 +30,7 @@ private val LightColorScheme = lightColorScheme(
 @Composable
 fun PinpointTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
+    // Dynamic color is available on Android 12+
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
@@ -38,6 +39,7 @@ fun PinpointTheme(
             val context = LocalContext.current
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
+
         darkTheme -> DarkColorScheme
         else -> LightColorScheme
     }

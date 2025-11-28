@@ -1,4 +1,4 @@
-package week11.st729217.pinpoint.ui.theme
+package week11.st729217.pinpoint.theme
 
 import androidx.compose.ui.graphics.Color
 

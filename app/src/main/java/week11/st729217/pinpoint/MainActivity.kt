@@ -14,8 +14,7 @@ import androidx.compose.ui.Modifier
 import week11.st729217.pinpoint.auth.viewmodel.AuthViewModel
 import week11.st729217.pinpoint.favorites.viewmodel.FavoritesViewModel
 import week11.st729217.pinpoint.navigation.AppNavHost
-import week11.st729217.pinpoint.ui.navigation.AppNavHost
-import week11.st729217.pinpoint.ui.theme.PinpointTheme
+import week11.st729217.pinpoint.theme.PinpointTheme
 
 class MainActivity : ComponentActivity() {
     private val authViewModel by viewModels<AuthViewModel>()
@@ -35,7 +34,7 @@ class MainActivity : ComponentActivity() {
                     if (authState.isAuthenticated) {
                         MainAppScaffold(favoritesViewModel = favoritesViewModel)
                     } else {
-                        AppNavHost(favoritesViewModel = favoritesViewModel) // This will now only handle login/register
+                        AppNavHost()
                     }
                 }
             }
