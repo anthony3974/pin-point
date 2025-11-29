@@ -18,6 +18,7 @@ sealed class Route(val route: String) {
     object Register: Route("register")
     object Home: Route("home")
     object Profile: Route("profile")
+
 }
 
 @Composable
@@ -68,6 +69,7 @@ fun AppNavHost(
                 },
                 onBack = { navController.popBackStack() }
             )
+
         }
     }
 }

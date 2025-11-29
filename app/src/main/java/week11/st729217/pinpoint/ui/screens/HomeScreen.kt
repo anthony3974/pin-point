@@ -87,5 +87,6 @@ fun HomeScreen(
                 FavoritesPage(favoritesViewModel = favoritesViewModel)
             }
         }
+
     }
 }
