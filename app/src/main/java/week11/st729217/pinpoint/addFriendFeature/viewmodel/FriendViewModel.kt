@@ -14,7 +14,9 @@ data class FriendUiState(
     val isLoading: Boolean = false,
     val successMessage: String? = null,
     val errorMessage: String? = null,
-    val pendingRequests: List<Friend> = emptyList()
+    val pendingRequests: List<Friend> = emptyList(),
+    val acceptedFriends: List<Friend> = emptyList()
+
 )
 
 class FriendViewModel(
@@ -29,6 +31,22 @@ class FriendViewModel(
     // It is good practice to uncomment this so data loads immediately when the screen opens
     init {
         loadPendingRequests()
+
+        loadAcceptedFriends()
+    }
+
+    // 2. ADD THIS FUNCTION: To fetch the accepted friends list
+    fun loadAcceptedFriends() {
+        val currentUser = auth.currentUser
+        val myUid = currentUser?.uid ?: return
+
+        viewModelScope.launch {
+            repository.getAcceptedFriends(myUid)
+                .collect { friends ->
+                    // Update the state with the new list
+                    _uiState.value = _uiState.value.copy(acceptedFriends = friends)
+                }
+        }
     }
 
     //sending friend request to the registered user by just using their email
@@ -125,6 +143,26 @@ class FriendViewModel(
             } else {
                 _uiState.value = _uiState.value.copy(
                     errorMessage = "Failed to decline request."
+                )
+            }
+        }
+    }
+
+    fun removeFriend(friendUid: String) {
+        val currentUser = auth.currentUser
+        val myUid = currentUser?.uid ?: return
+
+        viewModelScope.launch {
+            // Optional: You could add a loading state here if you want
+            val result = repository.removeFriend(myUid, friendUid)
+
+            if (result.isSuccess) {
+                _uiState.value = _uiState.value.copy(
+                    successMessage = "Friend removed."
+                )
+            } else {
+                _uiState.value = _uiState.value.copy(
+                    errorMessage = "Failed to remove friend."
                 )
             }
         }

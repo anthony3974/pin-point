@@ -185,5 +185,29 @@ class FriendRepository(
         }
     }
 
+    // Remove an existing friend (Unfriend)
+    suspend fun removeFriend(myUid: String, friendUid: String): Result<Unit> {
+        return try {
+            val batch = firestore.batch()
+
+            // 1. Delete them from MY list
+            val myFriendRef = firestore.collection("users").document(myUid)
+                .collection("friends").document(friendUid)
+
+            // 2. Delete me from THEIR list
+            val theirFriendRef = firestore.collection("users").document(friendUid)
+                .collection("friends").document(myUid)
+
+            batch.delete(myFriendRef)
+            batch.delete(theirFriendRef)
+
+            batch.commit().await()
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
 
 }//end of the Class
