@@ -8,5 +8,4 @@ data class Friend(
     val email: String? = "",        // Optional: Store email
     val status: String? = FriendStatus.PENDING.name, // "pending", "sent", "accepted"
     val timestamp: Timestamp = Timestamp.now()
-    val timestap: Timestamp = Timestamp.now()
 )
