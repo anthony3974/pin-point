@@ -21,9 +21,9 @@ class MqttRepository {
     private var mqttClient: MqttClient? = null
 
     // --- 1. CALLBACK INTERFACE ---
-    // This allows the ViewModel to receive data when a message arrives
     interface LocationCallback {
         fun onLocationReceived(friendUid: String, lat: Double, lng: Double)
+        fun onUserDisconnect(friendUid: String) // <--- NEW: Handle removal
     }
 
     private var locationCallback: LocationCallback? = null
@@ -48,27 +48,34 @@ class MqttRepository {
 
                     override fun messageArrived(topic: String?, message: MqttMessage?) {
                         try {
-                            // Topic format: pinpoint/user/{uid}/location
-                            // Payload format: "lat,lng"
                             if (topic != null && message != null) {
                                 val payload = String(message.payload)
-                                val parts = payload.split(",")
 
-                                // 1. Parse Coordinates
-                                if (parts.size == 2) {
-                                    val lat = parts[0].toDoubleOrNull()
-                                    val lng = parts[1].toDoubleOrNull()
+                                // Parse UID from Topic
+                                // Format: pinpoint/user/{uid}/location
+                                val topicParts = topic.split("/")
 
-                                    // 2. Parse UID from Topic
-                                    // topic.split("/") -> ["pinpoint", "user", "{uid}", "location"]
-                                    val topicParts = topic.split("/")
-                                    if (topicParts.size == 4) {
-                                        val friendUid = topicParts[2]
+                                if (topicParts.size == 4) {
+                                    val friendUid = topicParts[2]
 
-                                        // 3. Send to ViewModel
-                                        if (lat != null && lng != null) {
-                                            locationCallback?.onLocationReceived(friendUid, lat, lng)
-                                            Log.d("MQTT", "Received from $friendUid: $lat, $lng")
+                                    // --- LOGIC SPLIT: OFFLINE vs COORDINATES ---
+
+                                    // Case A: The "Goodbye" Packet
+                                    if (payload == "OFFLINE") {
+                                        locationCallback?.onUserDisconnect(friendUid)
+                                        Log.d("MQTT", "$friendUid went OFFLINE")
+                                    }
+                                    // Case B: Normal Location Update
+                                    else {
+                                        val parts = payload.split(",")
+                                        if (parts.size == 2) {
+                                            val lat = parts[0].toDoubleOrNull()
+                                            val lng = parts[1].toDoubleOrNull()
+
+                                            if (lat != null && lng != null) {
+                                                locationCallback?.onLocationReceived(friendUid, lat, lng)
+                                                Log.d("MQTT", "Received from $friendUid: $lat, $lng")
+                                            }
                                         }
                                     }
                                 }
@@ -115,9 +122,7 @@ class MqttRepository {
                     message.qos = 0
 
                     mqttClient?.publish(topic, message)
-                    Log.d("MQTT", "Published: $payload to $topic")
-                } else {
-                    Log.w("MQTT", "Client not connected, cannot publish.")
+                    // Log.d("MQTT", "Published: $payload")
                 }
             } catch (e: Exception) {
                 Log.e("MQTT", "Publish failed: ${e.message}")
@@ -125,7 +130,28 @@ class MqttRepository {
         }
     }
 
-    // --- 4. SUBSCRIBE (Listen to a friend) ---
+    // --- 4. PUBLISH OFFLINE (Send Goodbye Packet) ---
+    // <--- NEW FUNCTION
+    suspend fun publishOffline(userUid: String) {
+        withContext(Dispatchers.IO) {
+            try {
+                if (mqttClient?.isConnected == true) {
+                    val topic = "pinpoint/user/$userUid/location"
+                    val payload = "OFFLINE" // Special keyword
+
+                    val message = MqttMessage(payload.toByteArray())
+                    message.qos = 0
+
+                    mqttClient?.publish(topic, message)
+                    Log.d("MQTT", "Sent OFFLINE packet")
+                }
+            } catch (e: Exception) {
+                Log.e("MQTT", "Failed to send offline packet: ${e.message}")
+            }
+        }
+    }
+
+    // --- 5. SUBSCRIBE (Listen to a friend) ---
     fun subscribeToFriend(friendUid: String) {
         try {
             if (mqttClient?.isConnected == true) {
@@ -138,7 +164,7 @@ class MqttRepository {
         }
     }
 
-    // --- 5. DISCONNECT ---
+    // --- 6. DISCONNECT ---
     fun disconnect() {
         try {
             mqttClient?.disconnect()

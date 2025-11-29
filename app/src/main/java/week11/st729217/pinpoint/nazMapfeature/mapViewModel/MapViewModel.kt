@@ -37,24 +37,31 @@ class MapViewModel(
     private lateinit var fusedLocationClient: FusedLocationProviderClient
     private lateinit var locationCallback: LocationCallback
 
-    // --- INIT BLOCK: Setup Listeners ---
     init {
-        // 1. Setup Callback
+        // 1. Update the Callback Implementation
         mqttRepository.setLocationCallback(object : MqttRepository.LocationCallback {
-            override fun onLocationReceived(userUid: String, lat: Double, lng: Double) {
-                // LOGGING: Verify ViewModel gets the data
-                Log.d("MapViewModel", "Updating Map for $userUid: $lat, $lng")
-
-                // FIX: Use .update {} for thread safety
+            override fun onLocationReceived(friendUid: String, lat: Double, lng: Double) {
                 _uiState.update { currentState ->
                     val updatedMap = currentState.friendLocations.toMutableMap()
-                    updatedMap[userUid] = LatLng(lat, lng)
+                    updatedMap[friendUid] = LatLng(lat, lng)
                     currentState.copy(friendLocations = updatedMap)
                 }
             }
+
+            // HANDLE REMOVAL
+            override fun onUserDisconnect(friendUid: String) {
+                _uiState.update { currentState ->
+                    val updatedMap = currentState.friendLocations.toMutableMap()
+
+                    // Remove the friend from the map
+                    updatedMap.remove(friendUid)
+
+                    currentState.copy(friendLocations = updatedMap)
+                }
+                Log.d("MapViewModel", "Removed marker for $friendUid")
+            }
         })
 
-        // 2. Start tracking friends immediately
         trackFriends()
     }
 
@@ -96,10 +103,13 @@ class MapViewModel(
                     _uiState.update { it.copy(locationLog = "Connection Failed", isSharing = false) }
                 }
             } else {
-                // FIX: Do NOT disconnect MQTT here.
-                // We only stop GPS updates. We stay connected to see friends.
+                // 2. SEND GOODBYE PACKET BEFORE STOPPING
+                mqttRepository.publishOffline(uid)
+
                 stopLocationUpdates()
-                _uiState.update { it.copy(locationLog = "You are hidden (Viewing Friends)") }
+
+                // Do not disconnect entirely, so we can still see other friends
+                _uiState.update { it.copy(locationLog = "You are hidden.") }
             }
         }
     }
