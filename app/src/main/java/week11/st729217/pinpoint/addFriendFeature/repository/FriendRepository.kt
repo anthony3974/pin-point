@@ -159,5 +159,31 @@ class FriendRepository(
         awaitClose { listenerRegistration.remove() }
     }
 
+    // Decline a friend request (Deletes the documents)
+    suspend fun declineFriendRequest(myUid: String, friendUid: String): Result<Unit> {
+        return try {
+            val batch = firestore.batch()
+
+            // 1. Reference to MY document
+            val myFriendRef = firestore.collection("users").document(myUid)
+                .collection("friends").document(friendUid)
+
+            // 2. Reference to THEIR document
+            val theirFriendRef = firestore.collection("users").document(friendUid)
+                .collection("friends").document(myUid)
+
+            // 3. Delete both
+            batch.delete(myFriendRef)
+            batch.delete(theirFriendRef)
+
+            // 4. Commit
+            batch.commit().await()
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
 
 }//end of the Class

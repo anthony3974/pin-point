@@ -109,6 +109,27 @@ class FriendViewModel(
         }
     }
 
+    fun declineRequest(friendUid: String) {
+        val currentUser = auth.currentUser
+        val myUid = currentUser?.uid ?: return
+
+        viewModelScope.launch {
+            // Optional: Show loading state if you want,
+            // but for deletes it's usually fast enough to just run it.
+            val result = repository.declineFriendRequest(myUid, friendUid)
+
+            if (result.isSuccess) {
+                _uiState.value = _uiState.value.copy(
+                    successMessage = "Friend request declined."
+                )
+            } else {
+                _uiState.value = _uiState.value.copy(
+                    errorMessage = "Failed to decline request."
+                )
+            }
+        }
+    }
+
     // Helper to reset state after showing a Toast/Snackbar
     fun clearState() {
         // Only reset the messages, DO NOT reset the list

@@ -58,8 +58,11 @@ fun PendingRequestsScreen(
                     FriendRequestItem(
                         friend = friend,
                         onAcceptClick = {
-                            // Call the ViewModel function
                             viewModel.acceptRequest(friend.uid)
+                        },
+                        onDeclineClick = {
+                            // Call the new decline function
+                            viewModel.declineRequest(friend.uid)
                         }
                     )
                 }
