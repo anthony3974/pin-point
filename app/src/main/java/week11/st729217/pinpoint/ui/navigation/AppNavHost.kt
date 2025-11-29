@@ -6,8 +6,6 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
-import week11.st729217.pinpoint.addFriendFeature.screen.AddFriendScreen
-import week11.st729217.pinpoint.nazMapfeature.screen.MapScreen
 import week11.st729217.pinpoint.ui.screens.LoginScreen
 import week11.st729217.pinpoint.ui.screens.RegisterScreen
 import week11.st729217.pinpoint.ui.screens.HomeScreen
