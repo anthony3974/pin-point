@@ -20,8 +20,6 @@ sealed class Route(val route: String) {
     object Home: Route("home")
     object Profile: Route("profile")
 
-    object AddFriend: Route("addFriend")
-    object Map: Route("map")
 }
 
 @Composable
@@ -54,9 +52,7 @@ fun AppNavHost(modifier: Modifier = Modifier) {
 
         composable(Route.Home.route) {
             HomeScreen(
-                onOpenProfile = { navController.navigate(Route.Profile.route) },
-                onAddFriend = { navController.navigate(Route.AddFriend.route) },
-                        onMap = { navController.navigate(Route.Map.route) }
+                onOpenProfile = { navController.navigate(Route.Profile.route) }
             )
         }
 
@@ -71,13 +67,6 @@ fun AppNavHost(modifier: Modifier = Modifier) {
                 onBack = { navController.popBackStack() }
             )
 
-        }
-
-        composable(Route.AddFriend.route) {
-            AddFriendScreen()
-        }
-        composable(Route.Map.route) {
-            MapScreen()
         }
     }
 }
