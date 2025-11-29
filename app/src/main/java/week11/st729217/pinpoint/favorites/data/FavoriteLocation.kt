@@ -7,7 +7,7 @@ import com.google.firebase.firestore.Exclude
 // Firestore requires a no-argument constructor, so we provide default values.
 data class FavoriteLocation(
     @DocumentId val id: String = "",
-    val userId: String = "",
+    // The userId field is no longer needed as it's part of the document path.
     val name: String = "",
     val latitude: Double = 0.0,
     val longitude: Double = 0.0
