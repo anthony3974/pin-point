@@ -18,6 +18,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
 import kotlinx.coroutines.launch
+import week11.st729217.pinpoint.addFriendFeature.screen.AddFriendScreen
 import week11.st729217.pinpoint.favorites.ui.FavoritesPage
 import week11.st729217.pinpoint.favorites.viewmodel.FavoritesViewModel
 import week11.st729217.pinpoint.location.LocationScreen
@@ -27,12 +28,14 @@ sealed class MainScreen(val route: String, val title: String, val icon: ImageVec
     object Profile : MainScreen("profile", "Profile", Icons.Default.Person)
     object Location : MainScreen("location", "Map", Icons.Default.Place)
     object Favorites : MainScreen("favorites", "Favorites", Icons.Default.Favorite)
+    object AddFriends : MainScreen("addFriends", "Add Friends", Icons.Default.Favorite)
 }
 
 val mainScreens = listOf(
     MainScreen.Profile,
     MainScreen.Location,
-    MainScreen.Favorites
+    MainScreen.Favorites,
+    MainScreen.AddFriends
 )
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -92,6 +95,10 @@ fun MainAppScaffold(favoritesViewModel: FavoritesViewModel) {
                     ProfileScreen(
                         onSignOut = { FirebaseAuth.getInstance().signOut() },
                         onBack = { navController.popBackStack() } // Or navigate somewhere specific
+                    )
+                }
+                composable (MainScreen.AddFriends.route){
+                    AddFriendScreen(
                     )
                 }
             }
