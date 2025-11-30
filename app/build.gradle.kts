@@ -82,6 +82,10 @@ dependencies {
     implementation("org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5")
     implementation("androidx.localbroadcastmanager:localbroadcastmanager:1.1.0")
 
+    //OneSIgnal
+    implementation("com.onesignal:OneSignal:[5.1.0, 5.1.99]")
+    implementation("com.squareup.okhttp3:okhttp:4.12.0")
+
 }
 
 secrets {

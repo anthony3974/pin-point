@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "68365953978",
-    "project_id": "where-am-i-location-finder",
-    "storage_bucket": "where-am-i-location-finder.firebasestorage.app"
+    "project_number": "911359914208",
+    "project_id": "push-fadc9",
+    "storage_bucket": "push-fadc9.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:68365953978:android:9d288cb5dee5adff12cb83",
+        "mobilesdk_app_id": "1:911359914208:android:01e697939260c131302085",
         "android_client_info": {
           "package_name": "week11.st729217.pinpoint"
         }
@@ -15,7 +15,7 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAVkOqBBgQB2DyRhcsSlCSJ-9qimyTBguw"
+          "current_key": "AIzaSyAEAeEdzln5sSo1GJ2f9HGfdHZ4uhMAvRg"
         }
       ],
       "services": {

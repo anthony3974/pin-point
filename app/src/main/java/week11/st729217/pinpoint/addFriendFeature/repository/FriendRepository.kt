@@ -9,10 +9,14 @@ import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.tasks.await
 import week11.st729217.pinpoint.addFriendFeature.model.Friend
 import week11.st729217.pinpoint.addFriendFeature.model.FriendStatus
+import week11.st729217.pinpoint.pushNotification.service.OneSignalSender
 
 class FriendRepository(
     private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
 ) {
+
+    // 1. Initialize the sender
+    private val notificationSender = OneSignalSender()
 
     // Logic: Find user by email -> Send Request (Batch Write)
     suspend fun sendFriendRequest(
@@ -79,6 +83,13 @@ class FriendRepository(
 
             // Commit the batch
             batch.commit().await()
+
+            // We use 'friendUid' which you extracted from the search result earlier
+            notificationSender.sendNotificationToUser(
+                targetUid = friendUid,
+                title = "New Friend Request",
+                message = "$myName sent you a friend request!"
+            )
 
             Result.success(Unit)
         } catch (e: Exception) {
