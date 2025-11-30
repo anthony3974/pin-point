@@ -11,7 +11,7 @@ import week11.st729217.pinpoint.ONESIGNAL_APP_ID
 
 class OneSignalSender {
 
-    private val restApiKey = "os_v2_app_5gkauriydfcibc5ipmqbcip56uclzjv3bw3ewxvzzhrva54y55orjiawtgpzvoasj5ki2w5dczrpujjje3anehgsb43ar7vc2scuaeq"
+    private val restApiKey = ""
     private val client = OkHttpClient()
 
     // NOTICE: We take 'targetUid' instead of 'targetDeviceId'
