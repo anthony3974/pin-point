@@ -183,13 +183,14 @@ fun LocationScreen(modifier: Modifier = Modifier,
                 properties = MapProperties(isMyLocationEnabled = hasLocationPermission),
                 uiSettings = MapUiSettings(myLocationButtonEnabled = true)
             ) {
-                currentLocation?.let {
-                    Marker(
-                        state = MarkerState(position = LatLng(it.latitude, it.longitude)),
-                        title = "Current Location",
-                        snippet = "You are here"
-                    )
-                }
+                // silva
+//                currentLocation?.let {
+//                    Marker(
+//                        state = MarkerState(position = LatLng(it.latitude, it.longitude)),
+//                        title = "Current Location",
+//                        snippet = "You are here"
+//                    )
+//                }
                 favoriteLocations.forEach { favorite ->
                     Marker(
                         state = MarkerState(position = favorite.location),
