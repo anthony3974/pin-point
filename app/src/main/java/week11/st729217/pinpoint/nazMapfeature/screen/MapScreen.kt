@@ -37,6 +37,7 @@ import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
 import week11.st729217.pinpoint.nazMapfeature.mapViewModel.MapViewModel
+import week11.st729217.pinpoint.pushNotification.service.NotificationHelper
 
 @Composable
 fun MapScreen(
@@ -82,6 +83,23 @@ fun MapScreen(
                     Manifest.permission.ACCESS_COARSE_LOCATION
                 )
             )
+        }
+    }
+
+    LaunchedEffect(hasLocationPermission) {
+        if (hasLocationPermission) {
+            viewModel.startTracking()
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        viewModel.eventFlow.collect { event ->
+            when (event) {
+                is MapViewModel.Event.ShowNotification -> {
+                    // Trigger the actual notification
+                    NotificationHelper.showLocalNotification(context, "Nearby Alert", event.message)
+                }
+            }
         }
     }
 

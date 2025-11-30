@@ -1,0 +1,38 @@
+package week11.st729217.pinpoint.pushNotification.service
+
+
+import android.app.NotificationChannel
+import android.app.NotificationManager
+import android.content.Context
+import android.os.Build
+import androidx.core.app.NotificationCompat
+
+object NotificationHelper {
+
+    private const val CHANNEL_ID = "proximity_alert_channel"
+    private const val CHANNEL_NAME = "Nearby Friends"
+
+    fun showLocalNotification(context: Context, title: String, body: String) {
+        val notificationManager = context.getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        // Create Channel (Android 8+)
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                CHANNEL_ID,
+                CHANNEL_NAME,
+                NotificationManager.IMPORTANCE_HIGH
+            )
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        val notification = NotificationCompat.Builder(context, CHANNEL_ID)
+            .setSmallIcon(android.R.drawable.ic_dialog_map)
+            .setContentTitle(title)
+            .setContentText(body)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setAutoCancel(true)
+            .build()
+
+        notificationManager.notify(System.currentTimeMillis().toInt(), notification)
+    }
+}
