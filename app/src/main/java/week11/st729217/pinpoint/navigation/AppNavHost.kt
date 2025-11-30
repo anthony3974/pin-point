@@ -5,8 +5,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import week11.st729217.pinpoint.auth.ui.LoginScreen
-import week11.st729217.pinpoint.auth.ui.RegisterScreen
+import week11.st729217.pinpoint.ui.screens.LoginScreen
+import week11.st729217.pinpoint.ui.screens.RegisterScreen
 
 sealed class AuthRoute(val route: String) {
     object Login: AuthRoute("login")

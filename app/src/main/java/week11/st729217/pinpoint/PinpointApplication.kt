@@ -8,7 +8,7 @@ import kotlinx.coroutines.launch
 import com.onesignal.OneSignal
 import com.onesignal.debug.LogLevel
 // Your actual OneSignal App ID
-const val ONESIGNAL_APP_ID = ""
+const val ONESIGNAL_APP_ID = "e9940a45-1819-4480-8ba8-7b201121fdf5"
 
 class PinpointApplication : Application() {
     override fun onCreate() {
