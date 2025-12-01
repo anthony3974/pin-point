@@ -6,7 +6,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.google.firebase.auth.FirebaseAuth
-import week11.st729217.pinpoint.FavoritesViewModel
+import week11.st729217.pinpoint.favorites.viewmodel.FavoritesViewModel
 import week11.st729217.pinpoint.ui.screens.HomeScreen
 import week11.st729217.pinpoint.ui.screens.LoginScreen
 import week11.st729217.pinpoint.ui.screens.ProfileScreen

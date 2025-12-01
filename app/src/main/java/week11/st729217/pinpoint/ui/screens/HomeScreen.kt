@@ -21,8 +21,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import week11.st729217.pinpoint.FavoritesPage
-import week11.st729217.pinpoint.FavoritesViewModel
+import week11.st729217.pinpoint.favorites.ui.FavoritesPage
+import week11.st729217.pinpoint.favorites.viewmodel.FavoritesViewModel
 
 object AppDestinations {
     const val LOCATION_ROUTE = "location"

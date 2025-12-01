@@ -31,7 +31,7 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
-import week11.st729217.pinpoint.FavoritesViewModel
+import week11.st729217.pinpoint.favorites.viewmodel.FavoritesViewModel
 
 private val locationPermissions = arrayOf(
     Manifest.permission.ACCESS_FINE_LOCATION,
@@ -89,7 +89,10 @@ fun LocationScreen(modifier: Modifier = Modifier, favoritesViewModel: FavoritesV
                 modifier = Modifier.fillMaxSize(),
                 cameraPositionState = cameraPositionState,
                 onMapClick = { latLng ->
-                    favoritesViewModel.addFavorite(latLng)
+                    favoritesViewModel.addFavorite(
+                        latLng,
+                        name = "Fav"
+                    )
                 }
             ) {
                 currentLocation?.let {

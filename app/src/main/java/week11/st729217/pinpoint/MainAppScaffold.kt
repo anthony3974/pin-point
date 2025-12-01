@@ -47,16 +47,21 @@ fun MainAppScaffold(favoritesViewModel: FavoritesViewModel) {
     val navController = rememberNavController()
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
     val scope = rememberCoroutineScope()
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
+
+    val gesturesEnabled = currentDestination?.route != MainScreen.Location.route
 
     ModalNavigationDrawer(
         drawerState = drawerState,
+        gesturesEnabled = gesturesEnabled,
         drawerContent = {
             ModalDrawerSheet {
                 mainScreens.forEach { screen ->
                     NavigationDrawerItem(
                         icon = { Icon(screen.icon, contentDescription = screen.title) },
                         label = { Text(screen.title) },
-                        selected = navController.currentBackStackEntryAsState().value?.destination?.hierarchy?.any { it.route == screen.route } == true,
+                        selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                         onClick = {
                             navController.navigate(screen.route) {
                                 popUpTo(navController.graph.findStartDestination().id) { saveState = true }
