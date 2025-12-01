@@ -11,6 +11,8 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import com.google.firebase.auth.FirebaseAuth
+import com.onesignal.OneSignal
 import week11.st729217.pinpoint.auth.viewmodel.AuthViewModel
 import week11.st729217.pinpoint.favorites.viewmodel.FavoritesViewModel
 import week11.st729217.pinpoint.navigation.AppNavHost
@@ -22,6 +24,14 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser != null) {
+            // Sync the user with OneSignal immediately on startup
+            OneSignal.login(currentUser.uid)
+            android.util.Log.d("OneSignal", "Syncing User: ${currentUser.uid}")
+        }
+
         setContent {
             PinpointTheme {
                 val authState by authViewModel.uiState.collectAsState()
